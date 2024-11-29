@@ -38,6 +38,14 @@
             border-radius: 3px;
         }
         .bad {
+            background-color: #FFEB3B;
+            color: black;
+            border: none;
+            padding: 5px 15px;
+            cursor: pointer;
+            border-radius: 3px;
+        }
+        .verybad {
             background-color: #f44336;
             color: white;
             border: none;
@@ -61,6 +69,9 @@
             color: #4CAF50;
         }
         .bad-count {
+            color: #FFEB3B;
+        }
+        .very-bad-count {
             color: #f44336;
         }
         .export-buttons button {
@@ -87,6 +98,7 @@
                 <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Brand</th>
                 <th style="border: 1px solid #ddd; padding: 8px; text-align: center;">Good</th>
                 <th style="border: 1px solid #ddd; padding: 8px; text-align: center;">Bad</th>
+                <th style="border: 1px solid #ddd; padding: 8px; text-align: center;">Very Bad</th>
                 <th style="border: 1px solid #ddd; padding: 8px; text-align: center;">Total</th>
             </tr>
         </table>
@@ -107,7 +119,7 @@
 
         // Initialize counts and history
         brands.forEach(brand => {
-            counts[brand] = { good: 0, bad: 0 };
+            counts[brand] = { good: 0, bad: 0, verybad: 0 };
             history[brand] = [];
         });
 
@@ -125,6 +137,8 @@
                         <button class="good" onclick="addCount('${brand}', 'good')">+1</button>
                         <span class="count bad-count">${counts[brand].bad}</span>
                         <button class="bad" onclick="addCount('${brand}', 'bad')">+1</button>
+                        <span class="count very-bad-count">${counts[brand].verybad}</span>
+                        <button class="verybad" onclick="addCount('${brand}', 'verybad')">+1</button>
                         <button class="undo" onclick="undo('${brand}')" ${history[brand].length === 0 ? 'disabled' : ''}>↩</button>
                     </div>
                 `;
@@ -176,21 +190,25 @@
                 // Add data rows
                 let totalGood = 0;
                 let totalBad = 0;
+                let totalVeryBad = 0;
 
                 brands.forEach(brand => {
-                    const row = summaryTable.insertRow();
                     const good = counts[brand].good;
                     const bad = counts[brand].bad;
-                    const total = good + bad;
+                    const verybad = counts[brand].verybad;
+                    const total = good + bad + verybad;
                     
                     totalGood += good;
                     totalBad += bad;
+                    totalVeryBad += verybad;
 
                     if (total > 0) {  // Only show brands with data
+                        const row = summaryTable.insertRow();
                         row.innerHTML = `
                             <td style="border: 1px solid #ddd; padding: 8px;">${brand}</td>
                             <td style="border: 1px solid #ddd; padding: 8px; text-align: center; color: #4CAF50;">${good}</td>
-                            <td style="border: 1px solid #ddd; padding: 8px; text-align: center; color: #f44336;">${bad}</td>
+                            <td style="border: 1px solid #ddd; padding: 8px; text-align: center; color: #FFEB3B;">${bad}</td>
+                            <td style="border: 1px solid #ddd; padding: 8px; text-align: center; color: #f44336;">${verybad}</td>
                             <td style="border: 1px solid #ddd; padding: 8px; text-align: center;">${total}</td>
                         `;
                     }
@@ -202,8 +220,9 @@
                 totalRow.innerHTML = `
                     <td style="border: 1px solid #ddd; padding: 8px;">TOTAL</td>
                     <td style="border: 1px solid #ddd; padding: 8px; text-align: center; color: #4CAF50;">${totalGood}</td>
-                    <td style="border: 1px solid #ddd; padding: 8px; text-align: center; color: #f44336;">${totalBad}</td>
-                    <td style="border: 1px solid #ddd; padding: 8px; text-align: center;">${totalGood + totalBad}</td>
+                    <td style="border: 1px solid #ddd; padding: 8px; text-align: center; color: #FFEB3B;">${totalBad}</td>
+                    <td style="border: 1px solid #ddd; padding: 8px; text-align: center; color: #f44336;">${totalVeryBad}</td>
+                    <td style="border: 1px solid #ddd; padding: 8px; text-align: center;">${totalGood + totalBad + totalVeryBad}</td>
                 `;
             } else {
                 summaryDiv.style.display = 'none';
